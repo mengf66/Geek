@@ -62,4 +62,15 @@ public class UserController {
         }
         return userService.logout(request);
     }
+
+    /**
+     * 查看个人信息
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("/show")
+    public R<SafetyUser> show(HttpServletRequest request) {
+        return userService.show(request);
+    }
 }
