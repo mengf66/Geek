@@ -1,9 +1,9 @@
-package com.feng.geek.model.request;
+package com.feng.geek.model.request.user;
 
 import lombok.Data;
 
 @Data
-public class UserRegisterRequest {
+public class UserLoginRequest {
     /**
      * 密码
      */

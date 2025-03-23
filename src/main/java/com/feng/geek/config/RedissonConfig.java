@@ -23,7 +23,7 @@ public class RedissonConfig {
 
     @Bean
     public RedissonClient redissonClient() {
-        log.info(password);
+//        log.info(password);
         // 1. 创建配置
         Config config = new Config();
         String redisAddress = String.format("redis://%s:%s", host, port);
