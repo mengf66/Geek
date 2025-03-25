@@ -1,7 +1,8 @@
 package com.feng.geek.judge.codesandbox;
 
-import com.feng.ojsystem.judge.codesandbox.model.ExecuteCodeRequest;
-import com.feng.ojsystem.judge.codesandbox.model.ExecuteCodeResponse;
+
+import com.feng.geek.judge.codesandbox.model.ExecuteCodeRequest;
+import com.feng.geek.judge.codesandbox.model.ExecuteCodeResponse;
 
 public interface CodeSandbox {
 
