@@ -16,7 +16,7 @@ import lombok.Data;
 @Data
 public class Question implements Serializable {
     /**
-     * 
+     * id
      */
     @TableId(type = IdType.AUTO)
     private Long id;
@@ -32,7 +32,7 @@ public class Question implements Serializable {
     private String content;
 
     /**
-     * 标签列表（json数组
+     * 标签列表（json数组)
      */
     private String tags;
 

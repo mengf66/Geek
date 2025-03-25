@@ -5,12 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.feng.geek.common.ErrorCode;
+import com.feng.geek.enums.UserRoleEnum;
 import com.feng.geek.exception.BusinessException;
 import com.feng.geek.model.domain.User;
-import com.feng.geek.model.request.user.UserLoginRequest;
-import com.feng.geek.model.request.user.UserRegisterRequest;
-import com.feng.geek.model.request.user.UserSecretRequest;
-import com.feng.geek.model.request.user.UserUpdateRequest;
+import com.feng.geek.model.request.user.*;
 import com.feng.geek.model.response.SafetyUser;
 import com.feng.geek.service.UserService;
 import com.feng.geek.mapper.UserMapper;
@@ -206,6 +204,88 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
     }
 
+    @Override
+    public SafetyUser getLoginUser(HttpServletRequest request) {
+        SafetyUser loginUser = (SafetyUser) request.getSession().getAttribute(USER_LOGIN_STATE);
+        return loginUser;
+    }
+
+    /**
+     * 是否有权限
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public boolean isAuth(HttpServletRequest request) {
+        // 仅管理员可查询
+        SafetyUser loginUser = (SafetyUser) request.getSession().getAttribute(USER_LOGIN_STATE);
+        return isAuth(loginUser);
+    }
+
+    @Override
+    public boolean isAuth(SafetyUser user) {
+        return user != null && (UserRoleEnum.ADMIN.getValue() == user.getUserRole() || UserRoleEnum.BOSS.getValue() == user.getUserRole());
+    }
+
+    /**
+     * 是否是管理员
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public boolean isAdmin(HttpServletRequest request) {
+        // 仅管理员可查询
+        SafetyUser loginUser = (SafetyUser) request.getSession().getAttribute(USER_LOGIN_STATE);
+        return isAdmin(loginUser);
+    }
+
+    @Override
+    public boolean isAdmin(SafetyUser user) {
+        return user != null && (UserRoleEnum.ADMIN.getValue() == user.getUserRole());
+    }
+
+    /**
+     * 是否是社长
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public boolean isBoss(HttpServletRequest request) {
+        // 仅管理员可查询
+        SafetyUser loginUser = (SafetyUser) request.getSession().getAttribute(USER_LOGIN_STATE);
+        return isBoss(loginUser);
+    }
+
+    @Override
+    public boolean isBoss(SafetyUser user) {
+        return user != null && (UserRoleEnum.BOSS.getValue() == user.getUserRole());
+    }
+
+    @Override
+    public Boolean updateRole(UserRoleRequest userRoleRequest) {
+        long userId = userRoleRequest.getId();
+        int role = userRoleRequest.getRole();
+        User user = getById(userId);
+        if(user == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在");
+        }
+        if(role < 0 || role > 2) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "权限不存在");
+        }
+        if(role == 2) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "无权设置他人为社长");
+        }
+        user.setUserRole(role);
+        boolean b = updateById(user);
+        if(!b) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "更新失败");
+        }
+        return b;
+    }
+
     /**
      * 更改校验，是否有改变
      *
@@ -250,6 +330,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return null;
         }
         return loginUser;
+    }
+
+    /**
+     * 用户脱敏
+     *
+     * @param originUser
+     * @return
+     */
+    @Override
+    public SafetyUser getSafetyUser(User originUser) {
+        if (originUser == null) {
+            return null;
+        }
+        SafetyUser safetyUser = BeanUtil.copyProperties(originUser, SafetyUser.class);
+        return safetyUser;
+    }
+
+    /**
+     * 获取当前登录用户（允许未登录）
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public User getLoginUserPermitNull(HttpServletRequest request) {
+        // 先判断是否已登录
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        SafetyUser currentUser = (SafetyUser) userObj;
+        if (currentUser == null || currentUser.getId() == null) {
+            return null;
+        }
+        // 从数据库查询（追求性能的话可以注释，直接走缓存）
+        long userId = currentUser.getId();
+        return this.getById(userId);
     }
 }
 

@@ -3,10 +3,7 @@ package com.feng.geek.service;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.feng.geek.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.feng.geek.model.request.user.UserLoginRequest;
-import com.feng.geek.model.request.user.UserRegisterRequest;
-import com.feng.geek.model.request.user.UserSecretRequest;
-import com.feng.geek.model.request.user.UserUpdateRequest;
+import com.feng.geek.model.request.user.*;
 import com.feng.geek.model.response.SafetyUser;
 import org.springframework.stereotype.Service;
 
@@ -31,4 +28,24 @@ public interface UserService extends IService<User> {
     boolean updateUser(UserUpdateRequest userUpdateRequest, User loginUser);
 
     User updateUserSecret(UserSecretRequest userSecretRequest, User loginUser);
+
+    SafetyUser getLoginUser(HttpServletRequest request);
+
+    boolean isAuth(HttpServletRequest request);
+
+    boolean isAuth(SafetyUser user);
+
+    boolean isAdmin(HttpServletRequest request);
+
+    boolean isAdmin(SafetyUser user);
+
+    boolean isBoss(HttpServletRequest request);
+
+    boolean isBoss(SafetyUser user);
+
+    Boolean updateRole(UserRoleRequest userRoleRequest);
+
+    SafetyUser getSafetyUser(User originUser);
+
+    User getLoginUserPermitNull(HttpServletRequest request);
 }

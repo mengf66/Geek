@@ -2,7 +2,7 @@ package com.feng.geek.utils;
 
 
 import com.feng.geek.model.dto.MailDto;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
+//import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 
 

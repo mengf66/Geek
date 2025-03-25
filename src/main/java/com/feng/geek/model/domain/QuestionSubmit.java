@@ -49,7 +49,7 @@ public class QuestionSubmit implements Serializable {
     /**
      * 创建用户id
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 创建时间

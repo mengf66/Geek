@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.api.R;
 import com.feng.geek.common.ErrorCode;
 import com.feng.geek.exception.BusinessException;
 import com.feng.geek.model.domain.User;
-import com.feng.geek.model.request.user.UserLoginRequest;
-import com.feng.geek.model.request.user.UserRegisterRequest;
-import com.feng.geek.model.request.user.UserSecretRequest;
-import com.feng.geek.model.request.user.UserUpdateRequest;
+import com.feng.geek.model.request.user.*;
 import com.feng.geek.model.response.SafetyUser;
 import com.feng.geek.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -133,4 +130,27 @@ public class UserController {
         }
     }
 
+    /**
+     * 更改用户权限（仅社长）
+     *
+     * @param userRoleRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/update/role")
+    public R<Boolean> updateRole(@RequestBody UserRoleRequest userRoleRequest, HttpServletRequest request) {
+        if(userRoleRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        boolean boss = userService.isBoss(request);
+        if(!boss) {
+            throw new BusinessException(ErrorCode.NO_AUTH, "用户不是社长");
+        }
+        SafetyUser loginUser = userService.getLoginUser(request);
+        //社长不能更改自己的权限
+        if(userRoleRequest.getId() == loginUser.getId()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "社长不能更改自己的权限");
+        }
+        return R.ok(userService.updateRole(userRoleRequest));
+    }
 }
