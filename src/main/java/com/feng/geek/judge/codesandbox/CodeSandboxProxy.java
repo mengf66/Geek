@@ -4,6 +4,8 @@ import com.feng.geek.judge.codesandbox.model.ExecuteCodeRequest;
 import com.feng.geek.judge.codesandbox.model.ExecuteCodeResponse;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 @Slf4j
 public class CodeSandboxProxy implements CodeSandbox {
 
@@ -20,10 +22,10 @@ public class CodeSandboxProxy implements CodeSandbox {
      * @return
      */
     @Override
-    public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
+    public List<ExecuteCodeResponse> executeCode(ExecuteCodeRequest executeCodeRequest) {
         log.info("代码沙箱请求信息：" + executeCodeRequest.toString());
-        ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
-        log.info("代码沙箱响应信息：" + executeCodeResponse.toString());
-        return executeCodeResponse;
+        List<ExecuteCodeResponse> executeCodeResponses = codeSandbox.executeCode(executeCodeRequest);
+        log.info("代码沙箱响应信息：" + executeCodeResponses.toString());
+        return executeCodeResponses;
     }
 }

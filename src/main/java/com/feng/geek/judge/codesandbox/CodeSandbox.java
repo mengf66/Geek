@@ -4,6 +4,8 @@ package com.feng.geek.judge.codesandbox;
 import com.feng.geek.judge.codesandbox.model.ExecuteCodeRequest;
 import com.feng.geek.judge.codesandbox.model.ExecuteCodeResponse;
 
+import java.util.List;
+
 public interface CodeSandbox {
 
     /**
@@ -11,5 +13,5 @@ public interface CodeSandbox {
      * @param executeCodeRequest
      * @return
      */
-    ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest);
+    List<ExecuteCodeResponse> executeCode(ExecuteCodeRequest executeCodeRequest);
 }

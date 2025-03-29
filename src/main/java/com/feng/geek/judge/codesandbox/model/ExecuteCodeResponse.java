@@ -5,18 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExecuteCodeResponse {
 
-    private List<String> outputList;
+    private String output;
 
     private String message;
 
+    /**
+     * 0 - 等待中 1 - 判题中 2 - 成功 3 - 失败
+     */
     private Integer status;
 
     private JudgeInfo judgeInfo;

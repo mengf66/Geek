@@ -1,6 +1,7 @@
 package com.feng.geek.judge.codesandbox;
 
 
+import com.feng.geek.judge.codesandbox.impl.RemoteCodeSandbox;
 
 /**
  * 代码沙箱工厂（根据字符串参数创建指定的代码沙箱实例）
@@ -14,16 +15,11 @@ public class CodeSandboxFactory {
      * @return
      */
     public static CodeSandbox newInstance(String type) {
-//        switch(type) {
-//            case "example":
-//                return new ExampleCodeSandbox();
-//            case "remote":
-//                return new RemoteCodeSandbox();
-//            case "thirdParty":
-//                return new ThirdPartyCodeSandbox();
-//            default:
-//                return new ExampleCodeSandbox();
-//        }
-        return null;
+        switch(type) {
+            case "remote":
+                return new RemoteCodeSandbox();
+            default:
+                return new RemoteCodeSandbox();
+        }
     }
 }
