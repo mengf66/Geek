@@ -31,6 +31,12 @@ public class JavaJudgeStrategy implements JudgeStrategy{
         Question question = judgeContext.getQuestion();
 //        Long memory = judgeInfo.getMemory();
 //        Long time = judgeInfo.getTime();
+        long maxTime = 0;
+        long maxMemory = 0;
+        JudgeConfig judgeConfig = JSONUtil.toBean(question.getJudgeConfig(), JudgeConfig.class);
+        final long timeLimit = judgeConfig.getTimeLimit();
+        final long memoryLimit = judgeConfig.getMemoryLimit();
+//        1.先判断长度和输入是否相同，不同则报错
         if(inputList.size() == executeCodeResponses.size()) {
             return null;
         }
@@ -38,66 +44,40 @@ public class JavaJudgeStrategy implements JudgeStrategy{
         JudgeInfo judgeInfo = new JudgeInfo();
         List<Answer> answers = new ArrayList<>();
         for(int i = 0; i < executeCodeResponses.size(); i++) {
-
             Answer answer = new Answer();
             ExecuteCodeResponse executeCodeResponse = executeCodeResponses.get(i);
             JudgeCase judgeCase = judgeCases.get(i);
             Long memory = executeCodeResponse.getJudgeInfo().getMemory();
             Long time = executeCodeResponse.getJudgeInfo().getTime();
-            if (memory > 525L) {
+//          2.判断每个返回的时间和内存，有溢出则保存在对应的答案配置中
+            if (memory > memoryLimit) {
                 answer.setInput(judgeCase.getIntput());
                 answer.setMessage(JudgeInfoMessageEnum.MEMORY_LIMIT_EXCEEDED);
                 answers.add(answer);
                 break;
             }
-            judgeInfo.setMemory(memory);
-            judgeInfo.setTime(time);
-            String output = executeCodeResponse.getOutput();
+            if(time > timeLimit) {
+                answer.setInput(judgeCase.getIntput());
+                answer.setMessage(JudgeInfoMessageEnum.TIME_LIMIT_EXCEEDED);
+                answers.add(answer);
+                break;
+            }
+//            3.若时间内存无溢出，保存最大的时间和内存
+            maxTime = Math.max(maxTime, time);
+            maxMemory = Math.max(maxMemory, maxMemory);
 
+//            4.比叫答案和返回结果
+            String output = executeCodeResponse.getOutput();
             if(!output.equals(judgeCase.getOutput())) {
                 answer.setInput(judgeCase.getIntput());
                 answer.setMessage(JudgeInfoMessageEnum.WRONG_ANSWER);
+                answers.add(answer);
             }
         }
         JudgeInfo judgeInfoResponse = new JudgeInfo();
-//        judgeInfoResponse.setMessage(judgeInfoResponse.getMessage());
-//        judgeInfoResponse.setMemory(memory);
-//        judgeInfoResponse.setTime(time);
-//        List<String> outputList = new ArrayList<>();
-
-
-        JudgeInfoMessageEnum judgeInfoMessageEnum = JudgeInfoMessageEnum.WAITING;
-//        if(outputList.size() != inputList.size()) {
-//            judgeInfoMessageEnum = JudgeInfoMessageEnum.WRONG_ANSWER;
-//            judgeInfoResponse.setMessage(judgeInfoResponse.getMessage());
-//            return judgeInfoResponse;
-//        }
-
-//        for(int i = 0; i < judgeCaseList.size(); i++) {
-//            JudgeCase judgeCase = judgeCaseList.get(i);
-//            if(!judgeCase.getOutput().equals(outputList.get(i))) {
-//                judgeInfoMessageEnum = JudgeInfoMessageEnum.WRONG_ANSWER;
-//                judgeInfoResponse.setMessage(judgeInfoResponse.getMessage());
-//                return judgeInfoResponse;
-//            }
-//        }
-//        String judgeConfigStr = question.getJudgeConfig();
-//        JudgeConfig judgeConfig = JSONUtil.toBean(judgeConfigStr, JudgeConfig.class);
-//        Long needMemoryLimit = judgeConfig.getMemoryLimit();
-//        Long needTimeLimit = judgeConfig.getTimeLimit();
-//        if(memory > needMemoryLimit) {
-//            judgeInfoMessageEnum = JudgeInfoMessageEnum.MEMORY_LIMIT_EXCEEDED;
-//            judgeInfoResponse.setMessage(judgeInfoResponse.getMessage());
-//            return judgeInfoResponse;
-//        }
-//        long JAVA_PROGRAM_TIME_COST = 10000L;
-//        if((time - JAVA_PROGRAM_TIME_COST) > needTimeLimit) {
-//            judgeInfoMessageEnum = JudgeInfoMessageEnum.TIME_LIMIT_EXCEEDED;
-//            judgeInfoResponse.setMessage(judgeInfoResponse.getMessage());
-//            return judgeInfoResponse;
-//        }
-//        judgeInfoMessageEnum = JudgeInfoMessageEnum.ACCEPTED;
-//        judgeInfoResponse.setMessage(judgeInfoResponse.getMessage());
+        judgeInfo.setAnswers(answers);
+        judgeInfoResponse.setMemory(maxMemory);
+        judgeInfoResponse.setTime(maxTime);
         return judgeInfoResponse;
     }
 }

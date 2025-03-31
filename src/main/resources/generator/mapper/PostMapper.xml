@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.feng.geek.mapper.PostMapper">
+
+    <resultMap id="BaseResultMap" type="com.feng.geek.model.domain.Post">
+            <id property="id" column="id" />
+            <result property="title" column="title" />
+            <result property="content" column="content" />
+            <result property="likeNum" column="likeNum" />
+            <result property="collectNum" column="collectNum" />
+            <result property="commentNum" column="commentNum" />
+            <result property="createId" column="createId" />
+            <result property="isDelete" column="isDelete" />
+            <result property="createTime" column="createTime" />
+            <result property="updateTime" column="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,title,content,likeNum,collectNum,commentNum,
+        createId,isDelete,createTime,updateTime
+    </sql>
+</mapper>
