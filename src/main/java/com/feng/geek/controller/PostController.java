@@ -9,6 +9,7 @@ import com.feng.geek.model.domain.Post;
 import com.feng.geek.model.request.post.PostAddRequest;
 import com.feng.geek.model.request.post.PostQueryRequest;
 import com.feng.geek.model.request.post.PostUpdateRequest;
+import com.feng.geek.model.request.postthumb.PostThumbAddRequest;
 import com.feng.geek.model.response.PostShowReponse;
 import com.feng.geek.model.response.SafetyUser;
 import com.feng.geek.service.PostFavourService;
@@ -145,5 +146,25 @@ public class PostController {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
         return R.ok("收藏成功");
+    }
+
+    /**
+     * 点赞 / 取消点赞
+     *
+     * @param postThumbAddRequest
+     * @param request
+     * @return resultNum 本次点赞变化数
+     */
+    @PostMapping("/thumb")
+    public R<Integer> doThumb(@RequestBody PostThumbAddRequest postThumbAddRequest,
+                                         HttpServletRequest request) {
+        if (postThumbAddRequest == null || postThumbAddRequest.getPostId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 登录才能点赞
+        final SafetyUser loginUser = userService.getLoginUser(request);
+        long postId = postThumbAddRequest.getPostId();
+        int result = postThumbService.doPostThumb(postId, loginUser);
+        return R.ok(result);
     }
 }

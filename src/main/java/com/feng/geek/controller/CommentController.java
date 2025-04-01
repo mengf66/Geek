@@ -6,9 +6,12 @@ import com.feng.geek.common.ErrorCode;
 import com.feng.geek.exception.BusinessException;
 import com.feng.geek.model.domain.Comment;
 import com.feng.geek.model.request.comment.CommentAddRequest;
+import com.feng.geek.model.request.comment.CommentThumbAddRequest;
+import com.feng.geek.model.request.postthumb.PostThumbAddRequest;
 import com.feng.geek.model.response.CommentShowReponse;
 import com.feng.geek.model.response.SafetyUser;
 import com.feng.geek.service.CommentService;
+import com.feng.geek.service.CommentThumbService;
 import com.feng.geek.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +28,11 @@ public class CommentController {
     private CommentService commentService;
 
     @Resource
+    private CommentThumbService commentThumbService;
+
+    @Resource
     private UserService userService;
+
     /**
      * 评论添加
      *
@@ -83,6 +90,26 @@ public class CommentController {
         Comment comment = commentService.getById(commentId);
         CommentShowReponse commentShowReponse = BeanUtil.copyProperties(comment, CommentShowReponse.class);
         return R.ok(commentShowReponse);
+    }
+
+    /**
+     * 点赞 / 取消点赞
+     *
+     * @param commentThumbAddRequest
+     * @param request
+     * @return resultNum 本次点赞变化数
+     */
+    @PostMapping("/thumb")
+    public R<Integer> doThumb(@RequestBody CommentThumbAddRequest commentThumbAddRequest,
+                              HttpServletRequest request) {
+        if (commentThumbAddRequest == null || commentThumbAddRequest.getCommentId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 登录才能点赞
+        final SafetyUser loginUser = userService.getLoginUser(request);
+        long commentId = commentThumbAddRequest.getCommentId();
+        int result = commentThumbService.doCommentThumb(commentId, loginUser);
+        return R.ok(result);
     }
 
 }
