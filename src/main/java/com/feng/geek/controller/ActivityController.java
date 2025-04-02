@@ -6,11 +6,13 @@ import com.feng.geek.common.ErrorCode;
 import com.feng.geek.exception.BusinessException;
 import com.feng.geek.model.domain.Activity;
 import com.feng.geek.model.domain.Post;
+import com.feng.geek.model.domain.Takeactivity;
 import com.feng.geek.model.request.activity.ActivityAddRequest;
 import com.feng.geek.model.request.activity.ActivityUpdateRequest;
 import com.feng.geek.model.request.post.PostUpdateRequest;
 import com.feng.geek.model.response.SafetyUser;
 import com.feng.geek.service.ActivityService;
+import com.feng.geek.service.TakeactivityService;
 import com.feng.geek.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +31,8 @@ public class ActivityController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private TakeactivityService takeactivityService;
     /**
      * 任务添加
      *
@@ -96,5 +100,42 @@ public class ActivityController {
         return R.ok("删除成功");
     }
 
+    /**
+     * 任务报名
+     *
+     * @param activityId
+     * @param httpServletRequest
+     * @return
+     */
+    @GetMapping("/take")
+    public R<Long> takeActivity(@PathVariable long activityId, HttpServletRequest httpServletRequest) {
+        if(Long.valueOf(activityId) == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Takeactivity takeactivity = new Takeactivity();
+        takeactivity.setActivityId(activityId);
+        SafetyUser loginUser = userService.getLoginUser(httpServletRequest);
+        takeactivity.setUserId(loginUser.getId());
+        long id = takeactivityService.takeActivity(takeactivity);
+        if(id == -1) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        return R.ok(id);
+    }
 
+    @GetMapping("/delTake")
+    public R<String> delTakeActivity(@PathVariable long activityId, HttpServletRequest httpServletRequest) {
+        if(Long.valueOf(activityId) == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Takeactivity takeactivity = new Takeactivity();
+        takeactivity.setActivityId(activityId);
+        SafetyUser loginUser = userService.getLoginUser(httpServletRequest);
+        takeactivity.setUserId(loginUser.getId());
+        long id = takeactivityService.delTakeActivity(takeactivity);
+        if(id == 0) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        return R.ok("删除成功");
+    }
 }

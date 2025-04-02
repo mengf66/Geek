@@ -57,6 +57,12 @@ public class Activity implements Serializable {
     private Long takeNum;
 
     /**
+     * 已参加人数
+     */
+
+    private Long alTakeNum;
+
+    /**
      * 
      */
     private Integer isDelete;

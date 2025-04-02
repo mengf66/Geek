@@ -33,4 +33,10 @@ public class ActivityUpdateRequest {
      * 参加人数
      */
     private Long takeNum;
+
+    /**
+     * 已参加人数
+     */
+
+    private Long alTakeNum;
 }
